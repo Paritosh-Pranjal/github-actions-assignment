@@ -10,6 +10,9 @@ env:
 jobs:
     frontend:
         name: frontend
+        defaults:
+          run:
+            working-directory: frontend
         strategy:
             matrix:
                 nodejs_version: [18]
@@ -27,7 +30,7 @@ jobs:
         - name: Cache NPM dependecies
           uses: actions/cache@v3
           with:
-            path: node_modules
+            path: frontend/node_modules
             key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
         - name: Install Dependencies
