@@ -95,7 +95,7 @@ jobs:
         - name: Dockerhub Build for Testing
           uses: docker/build-push-action@v4
           with:
-            context: .
+            context: ./frontend
             push: false
             tags: ${{ vars.ASSIGNMENT_USERNAME}}/counter-app:${{ github.sha }}
       
