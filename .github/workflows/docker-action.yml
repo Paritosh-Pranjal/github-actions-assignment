@@ -35,5 +35,77 @@ jobs:
 
         - name: Install Dependencies
           run: npm install
+
+    code-coverage:
+      defaults:
+        run:
+          working-directory: frontend
+      runs-on: ubuntu-latest:18
+      steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+
+        - name: Setup NodeJS Version - 18
+          uses: actions/setup-node@v3
+          with:
+            node-version: 18
+        
+        - name: Cache NPM dependecies
+          uses: actions/cache@v3
+          with:
+            path: node_modules
+            key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}   
+
+        - name: Install Dependencies
+          run : npm install  
+
+        - name: Check Code Coverage
+          run: npm run test
+
+        - name: Archive Test Result
+          uses: actions/upload-artifact@v3
+          with:
+            name: Code-Coverage-Result
+            path: coverage
+            retention-days: 5
+
+    docker:
+      name: Build the Docker image
+      defaults:
+        run:
+          working-directory: frontend
+      runs-on: ubuntu-latest:18
+      steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+
+        - name: Setup NodeJS Version - 18
+          uses: actions/setup-node@v3
+          with:
+            node-version: 18
+        
+        - name: Cache NPM dependecies
+          uses: actions/cache@v3
+          with:
+            path: node_modules
+            key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}  
+        
+        - name: Dockerhub Build for Testing
+          uses: docker/build-push-action@v4
+          with:
+            context: .
+            push: false
+            tags: ${{ vars.ASSIGNMENT_USERNAME}}/counter-app:${{ github.sha }}
+      
+        - name: Docker Image testing
+          run: |
+            docker images
+            docker run --name counter-app-assignment -d  \
+                ${{ vars.DOCKERHUB_KODEKLOUD_USERNAME}}/counter-app:${{ github.sha }}
+            docker container ps 
+            docker container ps -a
+      
+
+        
           
           
