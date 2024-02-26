@@ -102,11 +102,18 @@ jobs:
         - name: Docker Image testing
           run: |
             docker images
-            docker run --name -p 8008:8008 counter-app-assignment -d  \
+            docker run --name counter-app-assignment -d  \
                 ${{ vars.ASSIGNMENT_USERNAME}}/counter-app:${{ github.sha }}
             docker container ps 
             docker container ps -a
       
+        - name: GHCR Login
+          uses: docker/login-action@v3
+          with:
+            registry: ghcr.io
+            username: ${{ github.repository_owner }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+            
         - name: Push the docker image to dockerhub and ghcr
           uses: docker/build-push-action@v4
           with:
