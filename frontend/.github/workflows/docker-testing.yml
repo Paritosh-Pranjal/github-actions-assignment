@@ -1,0 +1,34 @@
+name: Docker Login Counter App
+on: 
+  push:
+    branches:
+      - main
+
+env: 
+    REPO_OWNER: 'paritosh-pranjal'    
+
+jobs:
+    frontend:
+        name: frontend
+        strategy:
+            matrix:
+                nodejs_version: [18]
+                operating_system: [ubuntu-latest]
+        runs-on: ${{ matrix.operating_system }}
+        steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+
+        - name: Setup NodeJS Version - ${{ matrix.nodejs_version }}
+          uses: actions/setup-node@v3
+          with:
+            node-version: ${{ matrix.nodejs_version }}
+        
+        - name: Cache NPM dependecies
+          uses: actions/cache@v3
+          with:
+            path: node_modules
+            key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+
+        - name: Install Dependencies
+          run: npm install
